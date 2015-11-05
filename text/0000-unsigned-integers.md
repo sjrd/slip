@@ -287,12 +287,27 @@ into unsigned.
 
 Shift left `<<` and shift logical right `>>>` behave in the obvious way.
 
-The case of shift arithmetic right `>>` is debatable. It does not appear to
-have any *meaning* on unsigned integers, which argues against including it,
-much like `unary_-`. However, there is no trivial replacement for it if a
-bit-twiddling-based algorithm needs it. Therefore, we propose to include it,
-with the semantics that the most important bit is extended, i.e., it is also
-defined as going through the corresponding signed type.
+The case of shift arithmetic right `>>` is debatable. We argue that it should
+*not* be available on unsigned integers for two reasons.
+
+First, a shift arithmetic right does not appear to have any *meaning* on
+unsigned integers. The correct *arithmetic* shift if `>>>`. Therefore,
+similarly to `unary_-`, it should not be introduced.
+
+Second, existing languages that do have unsigned integer types, such as the C
+family, actually give different semantics to `>>` depending on whether it has
+a signed or unsigned operand: a `>>` on an unsigned operand does *not*
+sign-extend. It would be confusing to a C developer for `x >> 3` to sign-extend
+in Scala, but it would be equally confusing to a Scala developer that `x >> 3`
+*not* sign-extend. Therefore, we prefer to leave it out completely, and let a
+compiler error be raised.
+
+If a bit-twiddling-based algorithm needs the sign-extending shift right, it is
+always possible to reinterpret as signed, do the operation, and reinterpret
+back as unsigned: `(x.toInt >> 3).toUInt`.
+
+Note: the current implementation does provide `>>`, until we agree on this
+point.
 
 ### Inequality operators
 
