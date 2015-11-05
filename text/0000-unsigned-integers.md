@@ -34,17 +34,18 @@ Scala was initially designed to target the JVM, and, as such, defines exactly
 Compared to other languages, especially those in the tradition of
 compile-to-machine code, this list is missing types for unsigned integer types.
 
-When compiling Scala to other platforms than the JVM, such as JavaScript or
-LLVM, the missing unsigned integer types are a liability, especially when it
-comes to *interoperability with host language libraries*.
+When compiling Scala to other platforms than the JVM, such as JavaScript with
+Scala.js or native code/LLVM with the WiP ScalaNative, the missing unsigned
+integer types are a liability, especially when it comes to *interoperability
+with host language libraries*.
 
 For example, if a C library defines a function accepting a `uint32_t`, how would
 we type it in a FFI definition? Even in JavaScript, which supposedly has only
 `Double`s, there are APIs working with unsigned integers. The most well-known
-one is the
-[Typed Arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray).
-API. Currently, because of the lack of unsigned integers in Scala, the
-[facade types for `UInt8Array` in Scala.js](https://github.com/scala-js/scala-js/blob/v0.6.5/library/src/main/scala/scala/scalajs/js/typedarray/Uint8Array.scala)
+one is
+[the TypedArray API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray).
+Currently, because of the lack of unsigned integers in Scala, the
+[facade types for `Uint8Array` in Scala.js](https://github.com/scala-js/scala-js/blob/v0.6.5/library/src/main/scala/scala/scalajs/js/typedarray/Uint8Array.scala)
 is forced to use `Short` elements instead of a more appropriate `UByte`. Worse,
 [the one for `Uint32Array`](https://github.com/scala-js/scala-js/blob/v0.6.5/library/src/main/scala/scala/scalajs/js/typedarray/Uint32Array.scala)
 has to work with *Doubles*, because there is no signed integer type existing on
@@ -101,7 +102,7 @@ val x = array(3) / array(0)
 println(x) // 19.6 (!)
 ```
 
-This also cause type safety issues, since nothing prevents the developer from
+This also causes type safety issues, since nothing prevents the developer from
 introducing a non-integer `Double` into such an array:
 
 ```scala
@@ -139,7 +140,7 @@ def decodeISO88591(buffer: Array[Byte]): String = {
 ```
 
 The problem is that `buffer(i).toChar` will first *sign-extend* the signed
-`Byte` to an `Int`, then cut of the 16 most significant bits. If the initial
+`Byte` to an `Int`, then cut off the 16 most significant bits. If the initial
 `Byte` was ">= 0x80", it was actually *negative*, and therefore the resulting
 `Char` will have its 8 most significant bits set to 1, which is a bug.
 
@@ -367,7 +368,7 @@ that these methods be as fast primitive operations, since they can be
 intrinsified easily.
 
 There also exist efficient implementations of these methods in Scala.js. LLVM
-supports the relevant operations by default, obviously.
+supports the relevant operations by default for ScalaNative, obviously.
 
 The implementations in `BoxesRunTime` for universal equality and hash codes
 receives additional cases, which could slow down `==` on `Any`s and generic
@@ -428,8 +429,8 @@ interoperability scenarios, although they could limit the performance we can
 get out of unsigned integers. Since interoperability is paramount, we can again
 live with the constraints for the time being.
 
-For LLVM, the consequences of these constraints are, as of yet, unknown, but
-they could affect interoperability scenarios, and will most probably affect
+For ScalaNative, the consequences of these constraints are, as of yet, unknown,
+but they could affect interoperability scenarios, and will most probably affect
 performance.
 
 In the longer term, we should therefore consider more tightly integrating
@@ -437,6 +438,10 @@ unsigned integer types as true primitives of the compiler.
 
 Such a strategy will however be much riskier, and will take much more time to
 get right.
+
+### Performance evaluation
+
+TODO
 
 ### Time frame
 
@@ -449,7 +454,29 @@ In the longer term, for 2.13 or 2.14, we propose to evaluate whether the
 benefits of a compiler-space implementation outweigh the risks. The existing
 test suite will make sure that the behavior of operations is unchanged. This
 second phase should probably be studied jointly with the developments of
-Scala/LLVM.
+ScalaNative.
+
+## Previous discussions and implementations
+
+TODO
+
+## Out of scope
+
+The following related aspects are out of the scope of this proposal:
+
+### Literal notation for unsigned integers
+
+This proposal does not introduce any literal notation for unsigned integers.
+Instead, we always convert from signed literals, e.g., `5.toUInt`.
+
+Providing literal notation should be done in the context of a SIP for
+generalized user-defined literals.
+
+### Efficient arrays of unsigned integers
+
+We do not plan to address the issue of efficient arrays of unsigned integers.
+Solving this should be part of a broader context for efficient arrays of
+user-defined value classes in general, such as the encoding used in Dotty.
 
 ## Unresolved questions
 
