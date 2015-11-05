@@ -458,7 +458,24 @@ ScalaNative.
 
 ## Previous discussions and implementations
 
-TODO
+When
+[Value Classes (SIP-15)](http://docs.scala-lang.org/sips/completed/value-classes.html)
+were first introduced, the possibility to have new numeric types such as
+unsigned integers was mentioned as a motivation. Subsequently, several people
+[came up with implementations](https://groups.google.com/forum/#!topic/scala-sips/xtmUjsY9gTY)
+of unsigned Ints and Longs. Those implementations were however more hacky
+proofs of concept than a really thought-out proposal.
+
+Our proposal improves on those early attempts in several aspects:
+
+* Comprehensive but curated set of operations that are available on unsigned
+  integers, in particular no mixing signed and unsigned integers (avoid common
+  pitfalls found in other languages)
+* Precise semantics for all operations (a specification)
+* A meaningful notion of equality, which works well with other primitive types
+* Use JDK 8 methods to implement operations that are specific to unsigned
+  integers, such as division
+* Complete implementation with a test suite
 
 ## Out of scope
 
