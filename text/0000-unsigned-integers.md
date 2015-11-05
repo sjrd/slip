@@ -35,7 +35,7 @@ Compared to other languages, especially those in the tradition of
 compile-to-machine code, this list is missing types for unsigned integer types.
 
 When compiling Scala to other platforms than the JVM, such as JavaScript with
-Scala.js or native code/LLVM with the WiP ScalaNative, the missing unsigned
+Scala.js or native code/LLVM with the upcoming ScalaNative, the missing unsigned
 integer types are a liability, especially when it comes to *interoperability
 with host language libraries*.
 
