@@ -456,7 +456,91 @@ get right.
 
 ### Performance evaluation
 
-TODO
+To evaluate performance of our prototype we've implemented a simple jmh
+benchmark generator that checks composite performance of evaluation of complex
+arithmetic expressions for all number types (both primitive signed ones and
+user-defined unsigned ones.)
+
+For each type we've generated 4 benchmarks that use `+, -, *` ops (fastops)
+and 4 benchmarks that use `+, -, *, /, %` (allops). Each of the 4 benchmarks uses exatly
+the same arithmetic expressions for all types.
+
+The split between fastops and allops is important because unsigned division is
+quite a bit slower than signed one on latest release of JDK 8:
+
+    Benchmark                                        Mode  Cnt          Score         Error  Units
+    JavaUnsignedOpsBenchmark.divideSignedInt        thrpt   10  289640438.955 ±    8083.889  ops/s
+    JavaUnsignedOpsBenchmark.divideSignedLong       thrpt   10  129949160.450 ±  263920.176  ops/s
+    JavaUnsignedOpsBenchmark.divideUnsignedInt      thrpt   10  129822599.550 ±  467146.276  ops/s
+    JavaUnsignedOpsBenchmark.divideUnsignedLong     thrpt   10  116515165.337 ±  320494.336  ops/s
+    JavaUnsignedOpsBenchmark.remainderSignedInt     thrpt   10  289610097.357 ±   22436.869  ops/s
+    JavaUnsignedOpsBenchmark.remainderSignedLong    thrpt   10  128351756.019 ±   31661.773  ops/s
+    JavaUnsignedOpsBenchmark.remainderUnsignedInt   thrpt   10  117759850.536 ± 9581858.770  ops/s
+    JavaUnsignedOpsBenchmark.remainderUnsignedLong  thrpt   10   97262327.049 ±    3989.529  ops/s
+
+And here are the results of composite benchmarks.
+
+    Benchmark                  Mode  Cnt           Score          Error  Units
+    ByteBenchmark.allops1     thrpt   10    72101532.720 ±    62949.403  ops/s
+    ByteBenchmark.allops2     thrpt   10    93822602.887 ±    70547.785  ops/s
+    ByteBenchmark.allops3     thrpt   10    50415445.715 ±    29459.434  ops/s
+    ByteBenchmark.allops4     thrpt   10    47767777.642 ±     4095.958  ops/s
+    ByteBenchmark.fastops1    thrpt   10   167077817.747 ±     7048.300  ops/s
+    ByteBenchmark.fastops2    thrpt   10   281938341.011 ±  1959908.591  ops/s
+    ByteBenchmark.fastops3    thrpt   10   202659200.136 ±    13728.990  ops/s
+    ByteBenchmark.fastops4    thrpt   10   242013405.429 ±    26303.417  ops/s
+    IntBenchmark.allops1      thrpt   10    72255069.096 ±   139418.500  ops/s
+    IntBenchmark.allops2      thrpt   10    94205001.693 ±    71670.890  ops/s
+    IntBenchmark.allops3      thrpt   10    49356302.736 ±    53997.688  ops/s
+    IntBenchmark.allops4      thrpt   10    47156380.414 ±     7197.250  ops/s
+    IntBenchmark.fastops1     thrpt   10   167078472.081 ±     6027.824  ops/s
+    IntBenchmark.fastops2     thrpt   10   282427463.211 ±    32075.160  ops/s
+    IntBenchmark.fastops3     thrpt   10   203859798.186 ±     6279.197  ops/s
+    IntBenchmark.fastops4     thrpt   10   241630357.525 ±  1500673.314  ops/s
+    LongBenchmark.allops1     thrpt   10    24861516.831 ±     4197.771  ops/s
+    LongBenchmark.allops2     thrpt   10    36426132.931 ±     2323.716  ops/s
+    LongBenchmark.allops3     thrpt   10    14721533.975 ±     4144.797  ops/s
+    LongBenchmark.allops4     thrpt   10    15678949.162 ±     5489.105  ops/s
+    LongBenchmark.fastops1    thrpt   10   150074845.167 ±     7983.198  ops/s
+    LongBenchmark.fastops2    thrpt   10   272877062.688 ±    14932.590  ops/s
+    LongBenchmark.fastops3    thrpt   10   197190321.012 ±    14962.142  ops/s
+    LongBenchmark.fastops4    thrpt   10   241702806.351 ±  1160116.848  ops/s
+    ShortBenchmark.allops1    thrpt   10    72100558.516 ±    63144.493  ops/s
+    ShortBenchmark.allops2    thrpt   10    93828435.251 ±   128396.845  ops/s
+    ShortBenchmark.allops3    thrpt   10    50398036.554 ±    41245.443  ops/s
+    ShortBenchmark.allops4    thrpt   10    47769061.315 ±     3884.404  ops/s
+    ShortBenchmark.fastops1   thrpt   10   167080243.859 ±     5281.433  ops/s
+    ShortBenchmark.fastops2   thrpt   10   281574817.476 ±  1813411.003  ops/s
+    ShortBenchmark.fastops3   thrpt   10   202661928.747 ±    10719.480  ops/s
+    ShortBenchmark.fastops4   thrpt   10   241941943.414 ±    32812.300  ops/s
+    UByteBenchmark.allops2    thrpt   10    35707678.724 ±    25425.492  ops/s
+    UByteBenchmark.allops3    thrpt   10    14982724.811 ±     3925.928  ops/s
+    UByteBenchmark.fastops1   thrpt   10   162558875.892 ±     8306.601  ops/s
+    UByteBenchmark.fastops2   thrpt   10   297518170.393 ±    11756.503  ops/s
+    UByteBenchmark.fastops3   thrpt   10   202660368.479 ±    12821.385  ops/s
+    UByteBenchmark.fastops4   thrpt   10   241938447.669 ±    40988.277  ops/s
+    UIntBenchmark.allops2     thrpt   10    36583953.970 ±     1431.855  ops/s
+    UIntBenchmark.allops3     thrpt   10    15372440.705 ±     4104.708  ops/s
+    UIntBenchmark.fastops1    thrpt   10   167077701.586 ±     3682.233  ops/s
+    UIntBenchmark.fastops2    thrpt   10   282433771.618 ±    10947.595  ops/s
+    UIntBenchmark.fastops3    thrpt   10   203839914.627 ±    28152.274  ops/s
+    UIntBenchmark.fastops4    thrpt   10   242002642.206 ±     7674.911  ops/s
+    ULongBenchmark.allops2    thrpt   10    34716763.866 ±   130572.646  ops/s
+    ULongBenchmark.allops3    thrpt   10    13860021.358 ±    23716.633  ops/s
+    ULongBenchmark.fastops1   thrpt   10   150071162.524 ±     3131.132  ops/s
+    ULongBenchmark.fastops2   thrpt   10   272877195.767 ±     8394.553  ops/s
+    ULongBenchmark.fastops3   thrpt   10   197196431.691 ±     3834.341  ops/s
+    ULongBenchmark.fastops4   thrpt   10   242073102.851 ±   148118.957  ops/s
+    UShortBenchmark.allops2   thrpt   10    35712719.792 ±    18315.675  ops/s
+    UShortBenchmark.allops3   thrpt   10    15060095.319 ±     3893.780  ops/s
+    UShortBenchmark.fastops1  thrpt   10   162564999.577 ±     7178.956  ops/s
+    UShortBenchmark.fastops2  thrpt   10   297516440.926 ±    16719.916  ops/s
+    UShortBenchmark.fastops3  thrpt   10   202662322.706 ±     6328.860  ops/s
+    UShortBenchmark.fastops4  thrpt   10   241944627.523 ±    39320.658  ops/s
+
+As you can see fastops results have statistically insignificant differences between
+signed and unsigned numbers. Allops are 2-3x slower due to the fact that unsigned division
+isn't as well optimised.
 
 ### Time frame
 
