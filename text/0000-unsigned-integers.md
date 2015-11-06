@@ -582,7 +582,7 @@ Our proposal improves on those early attempts in several aspects:
 * A meaningful notion of equality, which works well with other primitive types
 * Use JDK 8 methods to implement operations that are specific to unsigned
   integers, such as division
-* Complete implementation with a test suite
+* Complete implementation with a test and benchmark suites
 
 ## Out of scope
 
