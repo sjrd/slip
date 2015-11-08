@@ -469,84 +469,92 @@ to corresponding type after each operation.
 The split between fastops and allops is important because unsigned division is
 quite a bit slower than signed one on latest release of JDK 8:
 
-    Benchmark                                        Mode  Cnt          Score        Error  Units
-    JavaUnsignedOpsBenchmark.divideSignedInt        thrpt  300  289644141.092 ±   1544.707  ops/s
-    JavaUnsignedOpsBenchmark.divideSignedLong       thrpt  300  129839962.558 ±  90581.655  ops/s
-    JavaUnsignedOpsBenchmark.divideUnsignedInt      thrpt  300  129838344.866 ±  95523.094  ops/s
-    JavaUnsignedOpsBenchmark.divideUnsignedLong     thrpt  300  116493219.034 ±  67688.631  ops/s
-    JavaUnsignedOpsBenchmark.remainderSignedInt     thrpt  300  289454769.011 ±  94380.057  ops/s
-    JavaUnsignedOpsBenchmark.remainderSignedLong    thrpt  300  128315753.345 ±  35932.509  ops/s
-    JavaUnsignedOpsBenchmark.remainderUnsignedInt   thrpt  300  111032938.420 ± 679921.289  ops/s
-    JavaUnsignedOpsBenchmark.remainderUnsignedLong  thrpt  300   97470062.788 ± 346773.054  ops/s
+    Benchmark   Type           Score        Error  Units
+
+    division    Int    289644141.092 ±   1544.707  ops/s
+    division    UInt   129838344.866 ±  95523.094  ops/s
+    division    Long   129839962.558 ±  90581.655  ops/s
+    division    ULong  116493219.034 ±  67688.631  ops/s
+    remainder   Int    289454769.011 ±  94380.057  ops/s
+    remainder   UInt   111032938.420 ± 679921.289  ops/s
+    remainder   Long   128315753.345 ±  35932.509  ops/s
+    remainder   ULong   97470062.788 ± 346773.054  ops/s
 
 And here are the results of composite benchmarks.
 
-    Benchmark                 Mode  Cnt            Score          Error  Units
-    ByteBenchmark.allop0     thrpt   10    307819990.487 ±  1910856.585  ops/s
-    ByteBenchmark.allop1     thrpt   10    296357330.002 ±  1533749.677  ops/s
-    ByteBenchmark.allop2     thrpt   10    212618730.739 ±   716804.808  ops/s
-    ByteBenchmark.allop3     thrpt   10    272857414.588 ±  1255306.148  ops/s
-    ByteBenchmark.fastop0    thrpt   10    696863806.647 ±  4793269.659  ops/s
-    ByteBenchmark.fastop1    thrpt   10    699108539.577 ±  2580901.965  ops/s
-    ByteBenchmark.fastop2    thrpt   10    696920095.001 ±  2230968.786  ops/s
-    ByteBenchmark.fastop3    thrpt   10   1334371583.818 ± 11135500.766  ops/s
-    IntBenchmark.allop0      thrpt   10    331247144.250 ±  1688631.109  ops/s
-    IntBenchmark.allop1      thrpt   10    332892091.727 ±  1876623.314  ops/s
-    IntBenchmark.allop2      thrpt   10    240636741.885 ±  1097508.848  ops/s
-    IntBenchmark.allop3      thrpt   10    374466342.335 ±  1605956.285  ops/s
-    IntBenchmark.fastop0     thrpt   10   1340886443.018 ± 13267237.793  ops/s
-    IntBenchmark.fastop1     thrpt   10   1141085941.243 ±  4152525.112  ops/s
-    IntBenchmark.fastop2     thrpt   10   1149201140.545 ± 10907609.088  ops/s
-    IntBenchmark.fastop3     thrpt   10   1801999710.269 ± 17470980.787  ops/s
-    LongBenchmark.allop0     thrpt   10    114554974.588 ±   481175.976  ops/s
-    LongBenchmark.allop1     thrpt   10    117008158.656 ±   787611.300  ops/s
-    LongBenchmark.allop2     thrpt   10     83024711.736 ±   349138.620  ops/s
-    LongBenchmark.allop3     thrpt   10    129001797.761 ±   648024.177  ops/s
-    LongBenchmark.fastop0    thrpt   10   1352962747.332 ±  7175340.507  ops/s
-    LongBenchmark.fastop1    thrpt   10   1140324206.697 ± 12231152.909  ops/s
-    LongBenchmark.fastop2    thrpt   10   1185658516.630 ±  6957609.555  ops/s
-    LongBenchmark.fastop3    thrpt   10   1942472553.938 ± 28009310.997  ops/s
-    NoopBenchmark.noop       thrpt   10  17569355780.249 ± 75767868.493  ops/s
-    ShortBenchmark.allop0    thrpt   10    308058338.552 ±  1256075.016  ops/s
-    ShortBenchmark.allop1    thrpt   10    294958043.054 ±   839904.749  ops/s
-    ShortBenchmark.allop2    thrpt   10    212149882.095 ±   841467.368  ops/s
-    ShortBenchmark.allop3    thrpt   10    272621547.145 ±  1257443.326  ops/s
-    ShortBenchmark.fastop0   thrpt   10    697666336.389 ±  1841101.672  ops/s
-    ShortBenchmark.fastop1   thrpt   10    699139240.507 ±  3551352.715  ops/s
-    ShortBenchmark.fastop2   thrpt   10    676107458.301 ±  2105400.703  ops/s
-    ShortBenchmark.fastop3   thrpt   10   1334464641.411 ±  7694503.258  ops/s
-    UByteBenchmark.allop0    thrpt   10    104674369.128 ±   677169.312  ops/s
-    UByteBenchmark.allop1    thrpt   10    106726447.669 ±   741117.597  ops/s
-    UByteBenchmark.allop2    thrpt   10     80637074.422 ±   330415.362  ops/s
-    UByteBenchmark.allop3    thrpt   10    112304550.129 ±   238629.107  ops/s
-    UByteBenchmark.fastop0   thrpt   10    691051734.960 ±  2533242.746  ops/s
-    UByteBenchmark.fastop1   thrpt   10    696380699.216 ±  2397939.314  ops/s
-    UByteBenchmark.fastop2   thrpt   10    678058338.737 ±  3247172.161  ops/s
-    UByteBenchmark.fastop3   thrpt   10   1354251178.544 ± 16381241.224  ops/s
-    UIntBenchmark.allop0     thrpt   10    109081634.986 ±   519572.778  ops/s
-    UIntBenchmark.allop1     thrpt   10    113621026.455 ±   452738.478  ops/s
-    UIntBenchmark.allop2     thrpt   10     82320724.746 ±   308663.284  ops/s
-    UIntBenchmark.allop3     thrpt   10    133352534.536 ±   473332.796  ops/s
-    UIntBenchmark.fastop0    thrpt   10   1342431007.363 ± 10716759.034  ops/s
-    UIntBenchmark.fastop1    thrpt   10   1142278127.643 ±  2727478.657  ops/s
-    UIntBenchmark.fastop2    thrpt   10   1148585187.879 ±  8827950.362  ops/s
-    UIntBenchmark.fastop3    thrpt   10   1902042188.267 ±  7112814.004  ops/s
-    ULongBenchmark.allop0    thrpt   10    125067017.085 ±   273758.354  ops/s
-    ULongBenchmark.allop1    thrpt   10    122976912.651 ±   789066.930  ops/s
-    ULongBenchmark.allop2    thrpt   10     92052409.918 ±   353832.357  ops/s
-    ULongBenchmark.allop3    thrpt   10    213508894.287 ±  1176178.456  ops/s
-    ULongBenchmark.fastop0   thrpt   10   1357711969.313 ±  6115816.525  ops/s
-    ULongBenchmark.fastop1   thrpt   10   1142574083.613 ±  6380437.688  ops/s
-    ULongBenchmark.fastop2   thrpt   10   1183205189.744 ± 13607941.928  ops/s
-    ULongBenchmark.fastop3   thrpt   10   1949503109.153 ± 10053274.914  ops/s
-    UShortBenchmark.allop0   thrpt   10    108797418.370 ±   307725.353  ops/s
-    UShortBenchmark.allop1   thrpt   10    108284038.956 ±   343005.506  ops/s
-    UShortBenchmark.allop2   thrpt   10     79444339.526 ±   284875.296  ops/s
-    UShortBenchmark.allop3   thrpt   10    116104366.065 ±   489295.631  ops/s
-    UShortBenchmark.fastop0  thrpt   10    689558016.667 ±  3990637.785  ops/s
-    UShortBenchmark.fastop1  thrpt   10    694871544.771 ±  2816396.560  ops/s
-    UShortBenchmark.fastop2  thrpt   10    679266443.431 ±  1853097.686  ops/s
-    UShortBenchmark.fastop3  thrpt   10   1357933924.801 ±  8300814.366  ops/s
+    Benchmark  Type            Score          Error  Units
+
+    allop0     Byte     76612958.318 ±    97814.015  ops/s
+    allop0     UByte    26160709.822 ±     2098.556  ops/s
+    allop0     Short    76800575.238 ±    75373.970  ops/s
+    allop0     UShort   27172978.979 ±     3244.075  ops/s
+    allop0     Int      82816920.142 ±    50194.565  ops/s
+    allop0     UInt     27232792.726 ±     5116.920  ops/s
+    allop0     Long     28648964.226 ±     6115.162  ops/s
+    allop0     ULong    29657228.040 ±   159758.363  ops/s
+
+    allop1     Byte     73715102.215 ±    17282.291  ops/s
+    allop1     UByte    26490808.836 ±    86628.862  ops/s
+    allop1     Short    73718029.884 ±    19413.132  ops/s
+    allop1     UShort   27041330.181 ±     4533.663  ops/s
+    allop1     Int      83239625.538 ±    13575.756  ops/s
+    allop1     UInt     28425497.966 ±    10927.728  ops/s
+    allop1     Long     29251967.961 ±     8278.100  ops/s
+    allop1     ULong    30537156.474 ±    14283.996  ops/s
+
+    allop2     Byte     53138040.117 ±     7692.219  ops/s
+    allop2     UByte    19912528.484 ±   104896.763  ops/s
+    allop2     Short    52989318.748 ±    10075.293  ops/s
+    allop2     UShort   19828139.740 ±      217.796  ops/s
+    allop2     Int      60104405.263 ±     1888.322  ops/s
+    allop2     UInt     20576204.367 ±      446.445  ops/s
+    allop2     Long     20752333.428 ±      789.741  ops/s
+    allop2     ULong    22949083.651 ±     5766.597  ops/s
+
+    allop3     Byte     68147811.661 ±     7349.838  ops/s
+    allop3     UByte    28016596.929 ±     4795.992  ops/s
+    allop3     Short    68147020.665 ±     8444.864  ops/s
+    allop3     UShort   29092855.210 ±    12323.477  ops/s
+    allop3     Int      93592095.470 ±     2970.030  ops/s
+    allop3     UInt     33298135.046 ±    15681.174  ops/s
+    allop3     Long     32276341.887 ±     3748.706  ops/s
+    allop3     ULong    53345993.564 ±     5486.483  ops/s
+
+    fastop0    Byte    174384841.686 ±    13685.151  ops/s
+    fastop0    UByte   172490336.775 ±    42178.142  ops/s
+    fastop0    Short   174388762.469 ±    10303.837  ops/s
+    fastop0    UShort  172545184.374 ±    37150.012  ops/s
+    fastop0    Int     335919041.150 ±   121423.806  ops/s
+    fastop0    UInt    335925277.378 ±   120408.170  ops/s
+    fastop0    Long    339125057.494 ±    71538.513  ops/s
+    fastop0    ULong   339306595.964 ±    70387.619  ops/s
+
+    fastop1    Byte    174736448.461 ±     9934.579  ops/s
+    fastop1    UByte   173817403.787 ±    20752.221  ops/s
+    fastop1    Short   174734415.599 ±     9850.473  ops/s
+    fastop1    UShort  173460828.250 ±    18068.154  ops/s
+    fastop1    Int     285178506.838 ±   129027.835  ops/s
+    fastop1    UInt    285137070.275 ±   145958.174  ops/s
+    fastop1    Long    285590926.722 ±   147048.419  ops/s
+    fastop1    ULong   274695574.679 ±  4878290.228  ops/s
+
+    fastop2    Byte    168971931.233 ±    40481.486  ops/s
+    fastop2    UByte   169665745.096 ±    27401.842  ops/s
+    fastop2    Short   168979347.127 ±    11033.548  ops/s
+    fastop2    UShort  169675543.605 ±    19494.266  ops/s
+    fastop2    Int     287563728.176 ±   122987.272  ops/s
+    fastop2    UInt    287559086.868 ±   126833.074  ops/s
+    fastop2    Long    296129286.397 ±   171488.897  ops/s
+    fastop2    ULong   296142819.979 ±   167330.949  ops/s
+
+    fastop3    Byte    333536457.973 ±    63928.967  ops/s
+    fastop3    UByte   339343014.623 ±   119819.041  ops/s
+    fastop3    Short   333535961.005 ±    69587.789  ops/s
+    fastop3    UShort  339354474.225 ±   121131.393  ops/s
+    fastop3    Int     475167307.642 ±   140060.266  ops/s
+    fastop3    UInt    475181473.416 ±   116982.494  ops/s
+    fastop3    Long    487109297.325 ±   580807.835  ops/s
+    fastop3    ULong   487190439.786 ±   737565.041  ops/s
 
 As you can see fastops results have statistically insignificant differences between
 signed and unsigned numbers. Allops are 2-3x slower due to the fact that unsigned division
